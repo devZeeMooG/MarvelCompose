@@ -17,4 +17,6 @@
     <string name="graphic_novel">Graphic Novel</string>
     <string name="digital_comic">Digital Comic</string>
     <string name="infinite_comic">Infinite Comic</string>
+    <string name="more_actions">More Actions</string>
+    <string name="go_to_detail">Go to detail</string>
 </resources>

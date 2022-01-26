@@ -4,7 +4,10 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -12,12 +15,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.*
 import com.zeemoog.marvelcompose.R
 import com.zeemoog.marvelcompose.data.entities.Comic
-import com.zeemoog.marvelcompose.data.repositories.ComicsRepository
+import com.zeemoog.marvelcompose.ui.screens.common.ErrorMessage
 import com.zeemoog.marvelcompose.ui.screens.common.MarvelItemDetailScreen
 import com.zeemoog.marvelcompose.ui.screens.common.MarvelItemsList
+import com.zeemoog.marvelcompose.ui.screens.common.MarvelItemsListScreen
 import kotlinx.coroutines.launch
 
-
+// sin uso de Either para manejo de errores
+/**
 @ExperimentalMaterialApi
 @ExperimentalPagerApi
 @ExperimentalFoundationApi
@@ -48,12 +53,75 @@ fun ComicsScreen(onClick: (Comic) -> Unit, viewModel: ComicsViewModel = viewMode
             viewModel.formatRequested(format)
 
             //recuperamos el estado de la paginas
-            val pageState by viewModel.state.getValue(format)
+            // para el manejo de ESTADO de JETPACK COMPOSE
+            //val pageState by viewModel.state.getValue(format)
+
+            // para el manejo de ESTADO de STATE FLOW
+            val pageState = viewModel.state.getValue(format).value
 
             MarvelItemsList(
                 loading = pageState.loading,
-                items = pageState.items,
+                items = pageState.comics,
                 onItemClick = onClick
+            )
+        }
+    }
+}   **/
+
+// usando Either para manejo de errores
+
+@ExperimentalMaterialApi
+@ExperimentalPagerApi
+@ExperimentalFoundationApi
+@Composable
+fun ComicsScreen(onClick: (Comic) -> Unit, viewModel: ComicsViewModel = viewModel()) {
+
+    // contiene el listado de formatos de un comic
+    // por el momento tomamos solo 3
+    // val formats = Comic.Format.values().take(3)
+
+    // nos devuelve todos los formatos de comics
+    val formats = Comic.Format.values().toList()
+
+    // para saber q pestaña seleccionar cuando movemos el pager
+    // necesitamos saber en q posicion esta el pager
+    val pagerState = rememberPagerState()
+
+    Column() {
+        ComicFormatsTabRow(
+            pagerState = pagerState,
+            formats = formats
+        )
+        HorizontalPager(
+            count = formats.size,
+            state = pagerState
+        ) { page ->
+            //recuperamos posicion, dentro de listado de formatos q corresponde con la pagina
+            val format = formats[page]
+
+            //accion o evento q lanzamos al viewmodel
+            viewModel.formatRequested(format)
+
+            //recuperamos el estado de la paginas
+            // para el manejo de ESTADO de JETPACK COMPOSE
+            //val pageState by viewModel.state.getValue(format)
+
+            // para el manejo de ESTADO de STATE FLOW
+            val pageState by viewModel.state.getValue(format).collectAsState()
+
+            //ya no es necesario xq llamamos a pantalla ppal
+            // el cual, implementa el manejo de errores
+            /**pageState.comics.fold( { ErrorMessage(it)} ) {
+                MarvelItemsList(
+                    loading = pageState.loading,
+                    items = it,
+                    onItemClick = onClick
+                )
+            } **/
+            MarvelItemsListScreen(
+                loading = pageState.loading,
+                items = pageState.comics,
+                onClick = onClick
             )
         }
     }
@@ -107,13 +175,26 @@ private fun Comic.Format.toStringRes(): Int = when (this) {
     Comic.Format.INFINITE_COMIC -> R.string.infinite_comic
 }
 
+// sin uso de Either para manejo de errores
+/**
+@ExperimentalMaterialApi
+@Composable
+fun ComicDetailScreen(viewModel: ComicDetailViewModel = viewModel()) {
+    val state by viewModel.state.collectAsState()
+    MarvelItemDetailScreen(
+        loading = state.loading,
+        item = state.comic
+    )
+}   **/
+
+// usando Either para manejo de errores
 
 @ExperimentalMaterialApi
 @Composable
 fun ComicDetailScreen(viewModel: ComicDetailViewModel = viewModel()) {
+    val state by viewModel.state.collectAsState()
     MarvelItemDetailScreen(
-        loading = viewModel.state.loading,
-        marvelItem = viewModel.state.comic
+        loading = state.loading,
+        marvelItem = state.comic
     )
 }
-

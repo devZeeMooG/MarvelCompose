@@ -9,9 +9,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -21,6 +23,8 @@ import com.zeemoog.marvelcompose.ui.navigation.*
 
 import com.zeemoog.marvelcompose.ui.theme.MarvelComposeTheme
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.systemuicontroller.SystemUiController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.zeemoog.marvelcompose.ui.screens.common.AppBarOverflowMenu
 import kotlinx.coroutines.launch
 
@@ -74,6 +78,35 @@ fun MarvelApp() {
                Navigation(appState.navController)
            }
         }
+        // modificamos el color de las status/navigation bar
+        SetStatusBarColorEffect()
+    }
+}
+
+
+@Composable
+fun SetStatusBarColorEffect(
+    color: Color = MaterialTheme.colors.primaryVariant,
+    systemUiController: SystemUiController = rememberSystemUiController()
+) {
+    // como ahora vienen x argumento las sacamos de aca
+    //con esta val podremos modificar las barras de estado
+    /**val systemUiController = rememberSystemUiController()  **/
+    //recuperamos el primaryVariant del "theme"
+    /**val primaryVariant = MaterialTheme.colors.primaryVariant  **/
+
+    //recomendado x las guias
+    // x lo tanto cada vez q haya una recomposision del componente
+    // se actualizen las barras de ui
+    SideEffect {
+        //modifica tanto la barra de status y de navigation
+        systemUiController.setSystemBarsColor(color = color)
+
+        //modifica la status bar
+        /**systemUiController.setStatusBarColor()**/
+
+        //modifica la navigation bar
+        /**systemUiController.setNavigationBarColor()**/
     }
 }
 

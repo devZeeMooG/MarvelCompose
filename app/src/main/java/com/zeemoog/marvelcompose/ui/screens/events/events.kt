@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.*
 import com.zeemoog.marvelcompose.data.entities.Event
-import com.zeemoog.marvelcompose.data.repositories.EventsRepository
 import com.zeemoog.marvelcompose.ui.screens.common.MarvelItemDetailScreen
 import com.zeemoog.marvelcompose.ui.screens.common.MarvelItemsListScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -14,9 +13,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @ExperimentalFoundationApi
 @Composable
 fun EventsScreen(onClick: (Event) -> Unit, viewModel: EventsViewModel = viewModel()) {
+    val state by viewModel.state.collectAsState()
     MarvelItemsListScreen(
-        loading = viewModel.state.loading,
-        items = viewModel.state.items,
+        loading = state.loading,
+        items = state.items,
         onClick = onClick
     )
 }
@@ -25,9 +25,10 @@ fun EventsScreen(onClick: (Event) -> Unit, viewModel: EventsViewModel = viewMode
 @ExperimentalMaterialApi
 @Composable
 fun EventDetailScreen(viewModel: EventDetailViewModel = viewModel()) {
+    val state by viewModel.state.collectAsState()
     MarvelItemDetailScreen(
-        loading = viewModel.state.loading,
-        marvelItem = viewModel.state.event
+        loading = state.loading,
+        marvelItem = state.event
     )
 }
 

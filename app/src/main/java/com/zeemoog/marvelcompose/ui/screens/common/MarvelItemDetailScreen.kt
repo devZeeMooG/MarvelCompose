@@ -21,13 +21,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.zeemoog.marvelcompose.R
-import com.zeemoog.marvelcompose.data.entities.Character
 import com.zeemoog.marvelcompose.data.entities.MarvelItem
 import com.zeemoog.marvelcompose.data.entities.Reference
 import com.zeemoog.marvelcompose.data.entities.ReferenceList
-import com.zeemoog.marvelcompose.data.repositories.CharactersRepository
+import com.zeemoog.marvelcompose.data.entities.Result
 
-
+// sin uso de Either para manejar errores
+/**
 @ExperimentalMaterialApi
 @Composable
 fun MarvelItemDetailScreen(loading: Boolean = false, marvelItem: MarvelItem?) {
@@ -60,9 +60,45 @@ fun MarvelItemDetailScreen(loading: Boolean = false, marvelItem: MarvelItem?) {
             }
         }
     }
+}  **/
+
+// uso de Either para manejo de errores
+
+@ExperimentalMaterialApi
+@Composable
+fun MarvelItemDetailScreen(loading: Boolean = false, marvelItem: Result<MarvelItem?>) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (loading) {
+            CircularProgressIndicator()
+        }
+
+        marvelItem.fold( { ErrorMessage(it)} ) { item ->
+            if (item != null) {
+                MarvelItemDetailScaffold(
+                    marvelItem = item
+                ) { padding ->
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(padding)
+                    ) {
+                        item {
+                            Header(marvelItem = item)
+                        }
+
+                        item.references.forEach {
+                            val (icon, @StringRes stringRes) = it.type.createUiData()
+                            section(icon, stringRes, it.references)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
-
-
 
 @Composable
 fun Header(marvelItem: MarvelItem) {

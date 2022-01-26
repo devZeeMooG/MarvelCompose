@@ -39,7 +39,8 @@ fun MarvelItemDetailScaffold(
                             marvelItem.title,
                             marvelItem.urls.first()
                         )
-                    }
+                    },
+                    shape = MaterialTheme.shapes.small
                 ) {
                     Icon(
                         imageVector = Icons.Default.Share,
@@ -52,7 +53,8 @@ fun MarvelItemDetailScaffold(
         isFloatingActionButtonDocked = true, //habilita la adicion del button al bottombar
         bottomBar = {
             BottomAppBar(
-                cutoutShape = CircleShape //hace un corte redondeado en el bottombar para el floatingbutton
+                /**cutoutShape = CircleShape**/ //hace un corte redondeado en el bottombar para el floatingbutton
+                cutoutShape = MaterialTheme.shapes.small //tomara la misma forma del floatingbtn
             ) {
                 AppBarIcon(imageVector = Icons.Default.Menu, onClick = { /*TODO*/ })
                 Spacer(modifier = Modifier.weight(1f))

@@ -89,7 +89,6 @@ fun NavGraphBuilder.charactersNav(
 }
 
 
-
 @ExperimentalPagerApi
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
@@ -153,8 +152,8 @@ private fun NavGraphBuilder.composable(
     }
 }
 
-private inline fun <reified T> NavBackStackEntry.findArg(arg: NavArg): T {
+/**private inline fun <reified T> NavBackStackEntry.findArg(arg: NavArg): T {
     val value = arguments?.get(arg.key)
     requireNotNull(value)
     return value as T
-}
+}**/

@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import com.zeemoog.marvelcompose.data.entities.Character
-import com.zeemoog.marvelcompose.data.repositories.CharactersRepository
 import com.zeemoog.marvelcompose.ui.screens.common.MarvelItemDetailScreen
 import com.zeemoog.marvelcompose.ui.screens.common.MarvelItemsListScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,10 +49,12 @@ fun CharacterDetailScreen(characterId: Int) {
 
 // usando VIEWMODEL
 
+// manejando el ESTADO con STATE de JETPACK COMPOSE
+
 //para acceder al viewmodel, lo agregamos como argumento
 // es necesario agregar a mano a imports el viewmodel tambien
 //  --> import androidx.lifecycle.viewmodel.compose.viewModel
-
+/**
 @ExperimentalMaterialApi
 @ExperimentalFoundationApi
 @Composable
@@ -66,6 +67,23 @@ fun CharactersScreen(onClick: (Character) -> Unit, viewModel: CharactersViewMode
         items = viewModel.state.items,
         onClick = onClick
     )
+} **/
+
+// manejando el ESTADO con STATE FLOW
+
+@ExperimentalMaterialApi
+@ExperimentalFoundationApi
+@Composable
+fun CharactersScreen(onClick: (Character) -> Unit, viewModel: CharactersViewModel = viewModel()) {
+    // aqui se nota el "STATE HOSTING"
+    //  --> "estados" viajan hacia abajo
+    //  --> "eventos" hacia arriba
+    val state by viewModel.state.collectAsState()
+    MarvelItemsListScreen(
+        loading = state.loading,
+        items = state.items,
+        onClick = onClick
+    )
 }
 
 @ExperimentalMaterialApi
@@ -73,9 +91,10 @@ fun CharactersScreen(onClick: (Character) -> Unit, viewModel: CharactersViewMode
 fun CharacterDetailScreen(viewModel: CharacterDetailViewModel = viewModel()) {
     // lo q estaba antes "esta en el codigo comentado arriba"
     // ya no es necesario xq ahora tenemos el "ui state" siempre
+    val state by viewModel.state.collectAsState()
     MarvelItemDetailScreen(
-        loading = viewModel.state.loading,
-        marvelItem = viewModel.state.character
+        loading = state.loading,
+        marvelItem = state.character
     )
 }
 
